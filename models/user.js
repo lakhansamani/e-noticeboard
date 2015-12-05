@@ -16,6 +16,10 @@ var schema = mongoose.Schema({
 	modified:{
 		type:Date,
 		default:Date.now
+	},
+	token:{
+		type:String,
+		default:null
 	}
 });
 schema.methods.generateHash = function(password){
