@@ -2,7 +2,8 @@ var express = require('express');
 var router = express.Router();
 var passport = require('./../auth');
 var user=require('./../models/user');
-/* GET users listing. */
+var token=require('./../models/token');
+
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
@@ -10,6 +11,16 @@ router.post('/login',passport.authenticate('local',{
 	failureRedirect:'/',
 	successRedirect:'/home'
 }));
+router.get('/token/:token',function(req,res){
+	token.update({token:req.body.token},{},{upsert: true},function(err,result){
+		if(err){
+			console.log(err);
+		}
+		else{
+			res.send("done");
+		}
+	});
+});
 router.get('/client_login',function(req,res){
 	res.render('client_login',{'title':'login'});
 })
