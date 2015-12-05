@@ -26,6 +26,23 @@ router.get('/token/:token',function(req,res){
 router.get('/client_login',function(req,res){
 	res.render('client_login',{'title':'login'});
 })
+router.get('/register',function(req,res){
+	res.render('register',{'title':'login'});
+})
+router.post('/register',function(req,res){
+	var u=new user();
+	u.name=req.body.name;
+	u.username=req.body.username;
+	u.password=u.generateHash(req.body.password);
+	u.save(function(err,result){
+		if(err){
+			console.log(err);
+		}
+		else{
+			res.redirect('/users/client_login');
+		}
+	})
+})
 router.post('/client_login',passport.authenticate('local',{
 	failureRedirect:'/',
 	successRedirect:'/clientboard'

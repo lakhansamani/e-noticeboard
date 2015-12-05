@@ -4,12 +4,13 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
+var gcm=require("node-gcm");
 var session = require('express-session');
 var mongoose = require('mongoose');
 var passport = require('./auth');
 var MongoStore = require('connect-mongo')(session); // helps storing session in db
-var category = require('./models/category.js')
+var category = require('./models/category.js');
+var token=require('./models/token');
 var dburi="mongodb://admin:admin@ds041583.mongolab.com:41583/serverboard";
 var db=mongoose.connect(dburi);
 
@@ -85,6 +86,30 @@ app.use(function(err, req, res, next) {
 });
 io.on('connection', function(socket){
   socket.on('chat message', function(msg){
+    token.find({},function(err,result){
+      if(err){
+        console.log(err);
+      }
+      else{
+        var device_tokens = [];
+        for(var i=0;i<result.length;i++){
+          device_tokens.push(result[i].token);
+          var message = new gcm.Message();
+          var sender = new gcm.Sender('AIzaSyB4SjcrgIdadpuAvkbTAiuqi2vtJFlrkOM');
+          message.addData('title', 'New message');
+          message.addData('message', 'You have new notice please noticeboard');
+          message.addData('sound', 'notification');
+
+          message.collapseKey = 'testing';
+          message.delayWhileIdle = true;
+          message.timeToLive = 3;
+        }
+        sender.send(message, device_tokens, 4, function(result){
+          console.log(result);
+          console.log('push sent to: ' + device_tokens);
+        });
+      }
+    })
     var c = new category({
 			name:msg.title,
 			user_id:null,

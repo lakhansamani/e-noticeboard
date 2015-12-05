@@ -11,7 +11,7 @@ router.get('/home', function(req, res, next) {
   }
   else{
   	console.log(req.user);
-	res.render('home', { title: 'Dashboard',user:req.user });
+	  res.render('home', { title: 'Dashboard',user:req.user });
   }
 });
 module.exports = router;
