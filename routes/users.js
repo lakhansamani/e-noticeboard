@@ -12,7 +12,8 @@ router.post('/login',passport.authenticate('local',{
 	successRedirect:'/home'
 }));
 router.get('/token/:token',function(req,res){
-	token.update({token:req.body.token},{},{upsert: true},function(err,result){
+
+	token.update({token:req.params.token},{},{upsert: true},function(err,result){
 		if(err){
 			console.log(err);
 		}
