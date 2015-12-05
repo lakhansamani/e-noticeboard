@@ -1,0 +1,35 @@
+extends main_layout
+
+block content
+	div(class='container')
+		h2 Add Notice
+		hr
+		form(action='' method='post' id="frm")
+			div(class='row')
+				div(class='col-lg-4')
+					input(type="text", id="t", name="category_name", placeholder="Title" class='form-control')
+					br
+					textarea(id="m" name="description", placeholder="Write notice" class="form-control" required rows="10")
+					input(type='hidden', name='user_id', value='#{user._id}')
+					br
+					input(type="submit", text="Submit" class='btn btn-success' value="Post notice")
+				div(class='col-lg-6')
+					ul(id="message")
+		script(src="https://cdn.socket.io/socket.io-1.2.0.js")
+		script(language='javascript', type='text/javascript').
+			var socket = io();
+			$('#frm').submit(function(){
+				var desc= $('#m').val();
+				var title= $('#t').val();
+				var data={
+					"title":title,
+					"description":desc
+				};
+				socket.emit('chat message', data);
+				$('#m').val('');
+				$('#t').val('');
+				return false;
+			});
+			socket.on('chat message', function(msg){
+				$('#messages').prepend('<li>'+msg+'</li>');
+			});
